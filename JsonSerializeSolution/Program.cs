@@ -1,26 +1,39 @@
 ﻿using System;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 
 namespace JsonSerializeSolution
 {
+    [Serializable]
     public class Car
     {
+        //public Dictionary<string, string> Parts { get; set; }
+        public List<Wheel> Wheels { get; set; }
         public string ModelName { get; set; }
         public decimal Price { get; set; }
         public double HorcePower { get; set; }
         public bool IsStock { get; set; }
         public DateTime DateOfIssue { get; set; }
+
         //[MyJsonName("MyLetterInfo")]
         public char Letter { get; set; }
+        
         public int[] Sizes { get; set; }
         public string[] Colors { get; set; }
+        public Engine EngineOfCar { get; set; }
+
         public class Engine
         {
             public string Vendor { get; set; }
             public int CylinderCount { get; set; }
             public char[] SerialNumber { get; set; }
         }
-        public Engine EngineOfCar { get; set; }
+        
+        public class Wheel
+        {
+            public string ModelName { get; set; }
+            public int Size { get; set; }
+        }
     }
 
     class Program
@@ -42,8 +55,36 @@ namespace JsonSerializeSolution
                     CylinderCount = 8,
                     Vendor="Toyeta Motors corp.",
                     SerialNumber=new char[] { 'X', '5','1','8', 'Y', '2', 'Z'}
+                },
+                Wheels=new List<Car.Wheel>()
+                {
+                    new Car.Wheel()
+                    {
+                        ModelName ="Goodyear",
+                        Size=85
+                    },
+                    new Car.Wheel()
+                    {
+                        ModelName ="Goodyear",
+                        Size=85
+                    },
+                    new Car.Wheel()
+                    {
+                        ModelName ="Goodyear",
+                        Size=85
+                    },
+                    new Car.Wheel()
+                    {
+                        ModelName ="Goodyear",
+                        Size=85
+                    }
                 }
-
+                //},
+                //Parts = new Dictionary<string, string>()
+                //{
+                //    ["cr"] = "Кардан",
+                //    ["kb"] = "Карбюратор"
+                //}
             };
             string myJson = Json.ToJson(car);
             string newtonJson = JsonConvert.SerializeObject(car);

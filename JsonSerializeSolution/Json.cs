@@ -13,37 +13,40 @@ namespace JsonSerializeSolution
         public static string ToJson(object obj)
         {
             string res = string.Empty;
+
             Type type = obj.GetType();
+
+            //if (!type.IsSerializable)
+            //{
+            //    return res;
+            //}
+
+            PropertyInfo[] properties = type.GetProperties();
+
             if (type.Equals(typeof(string)))
             {
                 res = AddQuotes(obj);
             }
             else
-            if (type.IsValueType)
+            if (obj is IEnumerable array)
             {
-                res = ValueToString(obj);
-            }
-            else
-            if (type.IsArray)
-            {
-                IEnumerable array = obj as IEnumerable;
                 foreach (object element in array)
                 {
-                    res += ToJson(element)+",";
+                    res += ToJson(element) + ",";
                 }
-                res=res.Remove(res.Length-1);
+                res = res.Remove(res.Length - 1);
                 res = $"[{res}]";
             }
             else
-            if (type.IsClass)
+            if (properties.Length > 0)
             {
-                PropertyInfo[] properties = type.GetProperties();
                 for (int i = 0; i < properties.Length; i++)
                 {
                     PropertyInfo p = properties[i];
                     string jsonName = p.Name;
                     TryGetNameFromAttr(p, ref jsonName);
-                    res += $"\"{jsonName}\":{ValueToString(p.GetValue(obj))}";
+                    object val = p.GetValue(obj);
+                    res += $"\"{jsonName}\":{ValueToString(val)}";
                     int last = properties.Length - 1;
                     if (i < last)
                     {
@@ -52,6 +55,31 @@ namespace JsonSerializeSolution
                 }
                 return "{" + res + "}";
             }
+            else
+            if (type.IsValueType)
+            {
+                res = ValueToString(obj);
+            }
+            //else
+            //if (type.IsClass)
+            //{
+            //    PropertyInfo[] properties = type.GetProperties();
+            //    for (int i = 0; i < properties.Length; i++)
+            //    {
+            //        PropertyInfo p = properties[i];
+            //        string jsonName = p.Name;
+            //        TryGetNameFromAttr(p, ref jsonName);
+            //        object val = p.GetValue(obj);
+            //        res += $"\"{jsonName}\":{ValueToString(val)}";
+            //        int last = properties.Length - 1;
+            //        if (i < last)
+            //        {
+            //            res = $"{res},";
+            //        }
+            //    }
+            //    return "{" + res + "}";
+            //}
+
             return res;
         }
 

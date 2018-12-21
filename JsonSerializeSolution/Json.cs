@@ -53,6 +53,7 @@ namespace JsonSerializeSolution
                         res = $"{res},";
                     }
                 }
+                
                 return "{" + res + "}";
             }
             else

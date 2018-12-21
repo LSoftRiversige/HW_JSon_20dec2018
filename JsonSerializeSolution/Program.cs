@@ -78,9 +78,9 @@ namespace JsonSerializeSolution
                         ModelName ="Goodyear",
                         Size=85
                     }
+                
                 }
-                //},
-                //Parts = new Dictionary<string, string>()
+                //,Parts = new Dictionary<string, string>()
                 //{
                 //    ["cr"] = "Кардан",
                 //    ["kb"] = "Карбюратор"

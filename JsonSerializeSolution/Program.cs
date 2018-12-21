@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
+// https://github.com/LSoftRiversige/HW_JSon_20dec2018.git
+
 namespace JsonSerializeSolution
 {
     [Serializable]

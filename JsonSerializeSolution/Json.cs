@@ -31,22 +31,16 @@ namespace JsonSerializeSolution
                 {
                     result += ToJson(element) + ",";
                 }
-                result = result.Remove(result.Length - 1);
-                result = $"[{result}]";
+                result = $"[{result.TrimEnd(',')}]";
             }
             else
             if (properties.Length > 0)
             {
                 for (int i = 0; i < properties.Length; i++)
                 {
-                    result += PropertyToString(obj, properties[i]);
-                    int last = properties.Length - 1;
-                    if (i < last)
-                    {
-                        result = $"{result},";
-                    }
+                    result += PropertyToString(obj, properties[i]) + ",";
                 }
-                return "{" + result + "}";
+                return "{" + result.TrimEnd(',') + "}";
             }
             else
             if (type.IsValueType)
@@ -59,7 +53,7 @@ namespace JsonSerializeSolution
         private static string PropertyToString(object obj, PropertyInfo p)
         {
             string jsonName = p.Name;
-            TryGetNameFromAttr(p, ref jsonName);
+            TryGetNameFromAttribute(p, ref jsonName);
             object value = p.GetValue(obj);
             if (p.PropertyType.IsEnum)
             {
@@ -68,7 +62,7 @@ namespace JsonSerializeSolution
             return $"\"{jsonName}\":{ValueToString(value)}";
         }
 
-        private static bool TryGetNameFromAttr(PropertyInfo p, ref string jsonName)
+        private static bool TryGetNameFromAttribute(PropertyInfo p, ref string jsonName)
         {
             foreach (var a in p.GetCustomAttributes())
             {

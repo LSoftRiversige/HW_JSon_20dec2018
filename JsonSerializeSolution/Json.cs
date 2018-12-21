@@ -12,82 +12,65 @@ namespace JsonSerializeSolution
     {
         public static string ToJson(object obj)
         {
-            string res = string.Empty;
-
+            string result = string.Empty;
             Type type = obj.GetType();
-
-            //if (!type.IsSerializable)
-            //{
-            //    return res;
-            //}
-
             PropertyInfo[] properties = type.GetProperties();
-
+            if (type.IsEnum)
+            {
+                result = ValueToString(obj);
+            }
+            else
             if (type.Equals(typeof(string)))
             {
-                res = AddQuotes(obj);
+                result = AddQuotes(obj);
             }
             else
             if (obj is IEnumerable array)
             {
                 foreach (object element in array)
                 {
-                    res += ToJson(element) + ",";
+                    result += ToJson(element) + ",";
                 }
-                res = res.Remove(res.Length - 1);
-                res = $"[{res}]";
+                result = result.Remove(result.Length - 1);
+                result = $"[{result}]";
             }
             else
             if (properties.Length > 0)
             {
                 for (int i = 0; i < properties.Length; i++)
                 {
-                    PropertyInfo p = properties[i];
-                    string jsonName = p.Name;
-                    TryGetNameFromAttr(p, ref jsonName);
-                    object val = p.GetValue(obj);
-                    res += $"\"{jsonName}\":{ValueToString(val)}";
+                    result += PropertyToString(obj, properties[i]);
                     int last = properties.Length - 1;
                     if (i < last)
                     {
-                        res = $"{res},";
+                        result = $"{result},";
                     }
                 }
-                
-                return "{" + res + "}";
+                return "{" + result + "}";
             }
             else
             if (type.IsValueType)
             {
-                res = ValueToString(obj);
+                result = ValueToString(obj);
             }
-            //else
-            //if (type.IsClass)
-            //{
-            //    PropertyInfo[] properties = type.GetProperties();
-            //    for (int i = 0; i < properties.Length; i++)
-            //    {
-            //        PropertyInfo p = properties[i];
-            //        string jsonName = p.Name;
-            //        TryGetNameFromAttr(p, ref jsonName);
-            //        object val = p.GetValue(obj);
-            //        res += $"\"{jsonName}\":{ValueToString(val)}";
-            //        int last = properties.Length - 1;
-            //        if (i < last)
-            //        {
-            //            res = $"{res},";
-            //        }
-            //    }
-            //    return "{" + res + "}";
-            //}
+            return result;
+        }
 
-            return res;
+        private static string PropertyToString(object obj, PropertyInfo p)
+        {
+            string jsonName = p.Name;
+            TryGetNameFromAttr(p, ref jsonName);
+            object value = p.GetValue(obj);
+            if (p.PropertyType.IsEnum)
+            {
+                value = (int)value;
+            }
+            return $"\"{jsonName}\":{ValueToString(value)}";
         }
 
         private static bool TryGetNameFromAttr(PropertyInfo p, ref string jsonName)
         {
-            IEnumerable<Attribute> propAttrs = p.GetCustomAttributes();
-            foreach (var a in propAttrs)
+            foreach (var a in p.GetCustomAttributes())
             {
                 Type type = typeof(MyJsonNameAttribute);
                 if (a.GetType() == type)
@@ -122,10 +105,10 @@ namespace JsonSerializeSolution
                     result = AddQuotes(string.Format("{0:s}", dt));
                     break;
                 case TypeCode.Decimal:
-                    result = NumToStr((decimal)value);
+                    result = NumberToString((decimal)value);
                     break;
                 case TypeCode.Double:
-                    result = NumToStr(Convert.ToDecimal(value));
+                    result = NumberToString(Convert.ToDecimal(value));
                     break;
                 case TypeCode.String:
                     result = AddQuotes(value);
@@ -137,15 +120,13 @@ namespace JsonSerializeSolution
                     result = value.ToString();
                     break;
             }
-
             return result;
         }
 
-        private static string NumToStr(decimal value)
+        private static string NumberToString(decimal value)
         {
-            string result;
-            result = value.ToString(CultureInfo.InvariantCulture);
-            if (Math.Truncate(value) == value)
+            string result = value.ToString(CultureInfo.InvariantCulture);
+            if (!result.Contains('.'))
             {
                 result += ".0";
             }

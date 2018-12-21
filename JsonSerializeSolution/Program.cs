@@ -7,7 +7,7 @@ namespace JsonSerializeSolution
     [Serializable]
     public class Car
     {
-        //public Dictionary<string, string> Parts { get; set; }
+        public DriverCategory DriverCategory { get; set; }
         public List<Wheel> Wheels { get; set; }
         public string ModelName { get; set; }
         public decimal Price { get; set; }
@@ -15,12 +15,14 @@ namespace JsonSerializeSolution
         public bool IsStock { get; set; }
         public DateTime DateOfIssue { get; set; }
 
-        //[MyJsonName("MyLetterInfo")]
+        [MyJsonName("Letter")]
         public char Letter { get; set; }
         
         public int[] Sizes { get; set; }
         public string[] Colors { get; set; }
         public Engine EngineOfCar { get; set; }
+
+        //public Dictionary<string, string> Parts { get; set; }
 
         public class Engine
         {
@@ -42,6 +44,7 @@ namespace JsonSerializeSolution
         {
             var car = new Car()
             {
+                DriverCategory=DriverCategory.B,
                 ModelName = "Land Cruiser LC 200",
                 Price = 2500000.45m,
                 IsStock = false,
@@ -78,14 +81,15 @@ namespace JsonSerializeSolution
                         ModelName ="Goodyear",
                         Size=85
                     }
-                
                 }
+
                 //,Parts = new Dictionary<string, string>()
                 //{
                 //    ["cr"] = "Кардан",
                 //    ["kb"] = "Карбюратор"
                 //}
             };
+
             string myJson = Json.ToJson(car);
             string newtonJson = JsonConvert.SerializeObject(car);
 
@@ -99,6 +103,7 @@ namespace JsonSerializeSolution
             Console.Write("Equality check: ");
             Console.WriteLine(isEqual);
             Console.WriteLine();
+
             if (isEqual)
             {
                 var car1 = JsonConvert.DeserializeObject<Car>(myJson);
@@ -108,5 +113,11 @@ namespace JsonSerializeSolution
             Console.WriteLine("Press any key...");
             Console.ReadKey();
         }
+    }
+
+    public enum DriverCategory
+    {
+        Undefined, 
+        A, B, C, D, E
     }
 }

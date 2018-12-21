@@ -19,13 +19,11 @@ namespace JsonSerializeSolution
             {
                 result = ValueToString(obj);
             }
-            else
-            if (type.Equals(typeof(string)))
+            else if (type.Equals(typeof(string)))
             {
                 result = AddQuotes(obj);
             }
-            else
-            if (obj is IEnumerable array)
+            else if (obj is IEnumerable array)
             {
                 foreach (object element in array)
                 {
@@ -33,8 +31,7 @@ namespace JsonSerializeSolution
                 }
                 result = $"[{result.TrimEnd(',')}]";
             }
-            else
-            if (properties.Length > 0)
+            else if (properties.Length > 0)
             {
                 for (int i = 0; i < properties.Length; i++)
                 {
@@ -42,8 +39,7 @@ namespace JsonSerializeSolution
                 }
                 return "{" + result.TrimEnd(',') + "}";
             }
-            else
-            if (type.IsValueType)
+            else if (type.IsValueType)
             {
                 result = ValueToString(obj);
             }
